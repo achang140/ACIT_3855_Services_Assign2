@@ -89,7 +89,8 @@ services:
 
   event_logger:
     image: event_logger
-    ports: "8120:8120"
+    ports: 
+      - "8120:8120"
     
 
 volumes:
