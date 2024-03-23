@@ -87,5 +87,10 @@ services:
       - "processing"
       - "audit_log"
 
+  event_logger:
+    image: event_logger
+    ports: "8120:8120"
+    
+
 volumes:
   my-db:

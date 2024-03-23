@@ -11,6 +11,8 @@ from base import Base
 from stats import Stats
 
 import yaml 
+import json
+import time
 import logging
 import logging.config
 import requests
@@ -19,6 +21,7 @@ import pytz
 from pytz import utc 
 from pytz import timezone
 
+from pykafka import KafkaClient
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
@@ -38,6 +41,30 @@ DB_ENGINE = create_engine("sqlite:///%s" % app_config["datastore"]["filename"])
 
 Base.metadata.bind = DB_ENGINE
 DB_SESSION = sessionmaker(bind=DB_ENGINE)
+
+current_retry = 0
+max_retries = app_config["events"]["max_retries"]
+
+while current_retry < max_retries:
+    try:
+        logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
+        client = KafkaClient(hosts=f"{app_config['events']['hostname']}:{app_config['events']['port']}")
+        topic = client.topics[str.encode(app_config["events"]["topic"])]
+        producer = topic.get_sync_producer()
+        # ready_msg = "Processing service successfully started and connected to Kafka. Message Code: 0003"
+        ready_msg = {
+            "message_info": "Processing service successfully started and connected to Kafka.",
+            "message_code": "0003"
+        }
+        ready_msg_str = json.dumps(ready_msg)
+        producer.produce(ready_msg_str.encode('utf-8'))
+        
+        break 
+
+    except:
+        logger.error("Connection failed.")
+        time.sleep(app_config["events"]["sleep_time"])
+        current_retry += 1
 
 def get_stats():
     """ Gets Hotel Room and Hotel Activity processsed statistics """
@@ -218,13 +245,27 @@ def populate_stats():
     # Log an INFO message indicating period processing has ended
     logger.info("End Periodic Processing")
 
+    # On periodic processing if it receives more than a configurable number of messages. 
+    # The default is 25 for this configurable value. The code for this message is 0004.
+    threshold = app_config["events"]["event_threshold"]
+    total_events_received = len(event_1_res_json) + len(event_2_res_json)
+
+    if total_events_received > threshold:
+        # msg = "Total events received exceeded threshold ({threshold}). Message Code: 0004"
+        msg = {
+            "message_info": "Total events received exceeded threshold ({threshold})",
+            "message_code": "0004"
+        }
+        msg_str = json.dumps(msg)
+        producer.produce(msg_str.encode('utf-8'))
+
     session.commit() 
     session.close() 
 
 
 def init_scheduler():
-    sched = BackgroundScheduler(daemon=True, timezone=timezone('America/Vancouver'))
     # sched = BackgroundScheduler(daemon=True, timezone=utc)
+    sched = BackgroundScheduler(daemon=True, timezone=timezone('America/Vancouver'))
     sched.add_job(populate_stats, 
                   'interval',
                    seconds=app_config['scheduler']['period_sec'])
