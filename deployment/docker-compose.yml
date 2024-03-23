@@ -87,8 +87,8 @@ services:
       - "processing"
       - "audit_log"
 
-  event_logger:
-    image: event_logger
+  event_log:
+    image: event_log
     ports: 
       - "8120:8120"
     
