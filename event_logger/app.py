@@ -106,7 +106,7 @@ def get_event_stats():
     # Read in the current statistics from the SQLite database (i.e., the row with the most recent last_update datetime stamp.
     session = DB_SESSION() 
 
-    # Number of messages for each message code 
+    # Retrieve data from the EventStats table, select the message_code column, count number of messages for each message code, and group by the message_code column 
     stats_counts = session.query(EventStats.message_code, func.count(EventStats.message_code)).group_by(EventStats.message_code).all()
 
     # If no stats exist, log an ERROR message and return 404 and the message “Statistics do not exist” OR return empty/default statistics
