@@ -96,10 +96,10 @@ services:
       - "8120:8120"
     depends_on:
       - "kafka"
-    # volumes:
-    #   - event-sqlite-db:/app/event_stats.sqlite
+    volumes:
+      - event-sqlite-db:/app
 
 volumes:
   my-db:
   process-sqlite-db:
-  # event-sqlite-db:
+  event-sqlite-db:
