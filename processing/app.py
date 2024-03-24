@@ -131,8 +131,8 @@ def populate_stats():
         )
     
 
-    session.add(stats)
-    session.commit()
+        session.add(stats)
+        session.commit()
 
     last_updated = stats.last_updated
     
