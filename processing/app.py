@@ -145,6 +145,7 @@ def populate_stats():
     hotel_activities_url = f"{app_config['eventstore']['url']}/booking/hotel-activities?start_timestamp={last_updated_formatted}&end_timestamp={curren_dateime_formatted}"
 
     # print(hotel_rooms_url)
+    # print(hotel_activities_url)
 
     event_1_response = requests.get(hotel_rooms_url)
     event_2_response = requests.get(hotel_activities_url)
@@ -220,7 +221,7 @@ def populate_stats():
     # Write the updated statistics to the SQLite database file (filename defined in your configuration)
     session.add(new_stats)
 
-    # # Log a DEBUG message for each event processed that includes the trace_id
+    # Log a DEBUG message for each event processed that includes the trace_id
     if len(event_1_res_json):
         trace_ids = [event_1["trace_id"] for event_1 in event_1_res_json]
         logger.debug(f"Processed Hotel Room Reservation Event Trace IDs: {', '.join(trace_ids)}")
