@@ -37,6 +37,15 @@ while current_retry < max_retries:
         second_topic = client.topics[str.encode(app_config["events"]["topics"][1])]
         second_producer = second_topic.get_sync_producer()
 
+        # Second Topic (event_log) 
+        # ready_msg = "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API. Message Code: 0001"
+        ready_msg = {
+            "message_info": "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API.",
+            "message_code": "0001"
+        }
+        ready_msg_str = json.dumps(ready_msg)
+        second_producer.produce(ready_msg_str.encode('utf-8'))
+
         break 
 
     except:
@@ -69,15 +78,6 @@ def book_hotel_room(body):
     # producer.produce(msg_str.encode('utf-8'))
     first_producer.produce(msg_str.encode('utf-8'))
 
-    # Second Topic (event_log) 
-    # ready_msg = "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API. Message Code: 0001"
-    ready_msg = {
-        "message_info": "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API.",
-        "message_code": "0001"
-    }
-    ready_msg_str = json.dumps(ready_msg)
-    second_producer.produce(ready_msg_str.encode('utf-8'))
-
     logger.info(f"Returned event Hotel Room Booking response (Id: ${body['trace_id']}) with status 201")
 
     # return NoContent, response.status_code
@@ -109,15 +109,6 @@ def book_hotel_activity(body):
     # First Topic (events)
     # producer.produce(msg_str.encode('utf-8'))
     first_producer.produce(msg_str.encode('utf-8'))
-
-    # Second Topic (event_log) 
-    # ready_msg = "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API. Message Code: 0001"
-    ready_msg = {
-        "message_info": "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API.",
-        "message_code": "0001"
-    }
-    ready_msg_str = json.dumps(ready_msg)
-    second_producer.produce(ready_msg_str.encode('utf-8'))
 
     logger.info("Returned event Hotel Activity Booking response (Id: %s) with status %d", body["trace_id"], 201)
 
