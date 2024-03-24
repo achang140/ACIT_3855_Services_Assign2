@@ -1,8 +1,6 @@
 import connexion 
 from connexion import FlaskApp
 from flask_cors import CORS, cross_origin
-# from connexion.middleware import MiddlewarePosition
-# from starlette.middleware.cors import CORSMiddleware
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +16,6 @@ import logging.config
 import requests
 import datetime
 import pytz
-from pytz import utc 
 from pytz import timezone
 
 from pykafka import KafkaClient
@@ -51,7 +48,6 @@ while current_retry < max_retries:
         client = KafkaClient(hosts=f"{app_config['events']['hostname']}:{app_config['events']['port']}")
         topic = client.topics[str.encode(app_config["events"]["topic"])]
         producer = topic.get_sync_producer()
-        # ready_msg = "Processing service successfully started and connected to Kafka. Message Code: 0003"
         ready_msg = {
             "message_info": "Processing service successfully started and connected to Kafka.",
             "message_code": "0003"
@@ -93,8 +89,6 @@ def get_stats():
         "max_hotel_activity_ppl": stats.max_hotel_activity_ppl,
         "last_updated": last_updated_vancouver.strftime('%Y-%m-%d %H:%M:%S %Z%z')
     }
-
-    # "last_updated": stats.last_updated 
 
     # Log a DEBUG message with the contents of the Python Dictionary
     logger.debug(statistics)
@@ -251,7 +245,6 @@ def populate_stats():
     total_events_received = len(event_1_res_json) + len(event_2_res_json)
 
     if total_events_received > threshold:
-        # msg = "Total events received exceeded threshold ({threshold}). Message Code: 0004"
         msg = {
             "message_info": "Total events received exceeded threshold ({threshold})",
             "message_code": "0004"
@@ -264,7 +257,6 @@ def populate_stats():
 
 
 def init_scheduler():
-    # sched = BackgroundScheduler(daemon=True, timezone=utc)
     sched = BackgroundScheduler(daemon=True, timezone=timezone('America/Vancouver'))
     sched.add_job(populate_stats, 
                   'interval',
@@ -277,15 +269,6 @@ app.add_api("openapi.yaml", strict_validation=True, validate_responses=True)
 
 CORS(app.app)
 app.app.config["CORS_HEADERS"] = "Content-Type"
-
-# app.add_middleware(
-#     CORSMiddleware,
-#     position=MiddlewarePosition.BEFORE_EXCEPTION,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"]
-# )
 
 if __name__ == "__main__":
     init_scheduler()

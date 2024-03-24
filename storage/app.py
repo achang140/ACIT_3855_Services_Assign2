@@ -60,8 +60,6 @@ def process_messages():
             # Second Topic event_log 
             second_topic = client.topics[str.encode(app_config["events"]["topics"][1])]
             second_producer = second_topic.get_sync_producer()
-
-            # ready_msg = f"Storage service successfully started and connected to Kafka. Ready to consume messages from the {app_config['events']['topics'][1]} topic. Message Code: 0002"
             ready_msg = {
                 "message_info": f"Storage service successfully started and connected to Kafka. Ready to consume messages from the {app_config['events']['topics'][1]} topic.",
                 "message_code": "0002"
@@ -154,7 +152,7 @@ def get_hotel_room(start_timestamp, end_timestamp):
     # print(results)
 
     for reservation in results:
-        # print(reservation.to_dict())      
+        # print(reservation.to_dict())
         results_list.append(reservation.to_dict())
 
     logger.debug("Query for Hotel Room Reservations after %s returns %d results" % (start_timestamp, len(results_list)))
