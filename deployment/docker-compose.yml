@@ -62,7 +62,7 @@ services:
       - "8090:8090"
     depends_on:
       - "kafka"
-      - "db"
+      # - "db"
   
   processing:
     image: processing 
@@ -96,7 +96,10 @@ services:
       - "8120:8120"
     depends_on:
       - "kafka"
+    # volumes:
+    #   - event-sqlite-db:/app/event_stats.sqlite
 
 volumes:
   my-db:
   # process-sqlite-db:
+  # event-sqlite-db:
