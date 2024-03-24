@@ -143,14 +143,6 @@ app.app.config["CORS_HEADERS"] = "Content-Type"
 
 
 
-app = connexion.FlaskApp(__name__, specification_dir="")
-app.add_api("openapi.yaml", strict_validation=True, validate_responses=True) 
-
-CORS(app.app)
-app.app.config["CORS_HEADERS"] = "Content-Type"
-
-
-
 if __name__ == "__main__":
     t1 = Thread(target=process_messages)
     t1.setDaemon(True)
