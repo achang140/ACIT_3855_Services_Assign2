@@ -271,6 +271,7 @@ app.add_api("openapi.yaml", strict_validation=True, validate_responses=True)
 CORS(app.app)
 app.app.config["CORS_HEADERS"] = "Content-Type"
 
+init_scheduler()
+
 if __name__ == "__main__":
-    init_scheduler()
-    app.run(host="0.0.0.0", port=8100, use_reloader=False)
+    app.run(host="0.0.0.0", port=8100)
