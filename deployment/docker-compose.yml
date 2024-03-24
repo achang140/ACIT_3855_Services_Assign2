@@ -71,6 +71,7 @@ services:
     network_mode: "host"
     depends_on: 
       - "storage"
+      - "kafka"
 
   audit_log:
     image: audit_log
@@ -91,7 +92,8 @@ services:
     image: event_log
     ports: 
       - "8120:8120"
-    
+    depends_on:
+      - "kafka"
 
 volumes:
   my-db:
