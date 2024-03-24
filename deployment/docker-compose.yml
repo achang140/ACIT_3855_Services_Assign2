@@ -72,8 +72,8 @@ services:
     depends_on: 
       - "storage"
       - "kafka"
-    # volumes:
-    #   - process-sqlite-db:/app/stats.sqlite
+    volumes:
+      - process-sqlite-db:/app/stats.sqlite
 
   audit_log:
     image: audit_log
@@ -101,5 +101,5 @@ services:
 
 volumes:
   my-db:
-  # process-sqlite-db:
+  process-sqlite-db:
   # event-sqlite-db:
