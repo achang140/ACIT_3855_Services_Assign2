@@ -73,7 +73,7 @@ services:
       - "storage"
       - "kafka"
     volumes:
-      - process-sqlite-db:/app/stats.sqlite
+      - process-sqlite-db:/app
 
   audit_log:
     image: audit_log
