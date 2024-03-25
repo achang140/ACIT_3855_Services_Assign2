@@ -57,6 +57,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/azureuser/config/receiver:/config
+      - /home/azureuser/logs:/logs
     depends_on:
       - "kafka"
 
@@ -68,6 +69,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/azureuser/config/storage:/config
+      - /home/azureuser/logs:/logs
     depends_on:
       - "kafka"
       - "db"
@@ -81,6 +83,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/azureuser/config/processing:/config
+      - /home/azureuser/logs:/logs
       # - process-sqlite-db:/app
     depends_on: 
       - "storage"
@@ -94,6 +97,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/azureuser/config/audit_log:/config
+      - /home/azureuser/logs:/logs
     depends_on:
       - "kafka"
 
@@ -113,6 +117,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/azureuser/config/event_log:/config
+      - /home/azureuser/logs:/logs
       # - event-sqlite-db:/app
     depends_on:
       - "kafka"
