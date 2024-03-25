@@ -129,5 +129,5 @@ app.add_api("openapi.yaml",
 
 if __name__ == "__main__":
     load()
-    app.run(port=8080, reload=False)
+    app.run(port=8080)
 
