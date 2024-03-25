@@ -11,43 +11,43 @@ import json
 from pykafka import KafkaClient
 
 
-with open('app_conf.yml', 'r') as f: 
-    app_config = yaml.safe_load(f.read())
-
-with open('log_conf.yml', 'r') as f: 
-    log_config = yaml.safe_load(f.read()) 
-    logging.config.dictConfig(log_config)
-
-logger = logging.getLogger('basicLogger')
-
-
-# if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
-#     print("In Test Environment")
-#     app_conf_file = "/config/app_conf.yml"
-#     log_conf_file = "/config/log_conf.yml"
-# else:
-#     print("In Dev Environment")
-#     app_conf_file = "app_conf.yml"
-#     log_conf_file = "log_conf.yml"
-
-# with open(app_conf_file, 'r') as f:
+# with open('app_conf.yml', 'r') as f: 
 #     app_config = yaml.safe_load(f.read())
 
-# # External Logging Configuration
-# with open(log_conf_file, 'r') as f:
-#     log_config = yaml.safe_load(f.read())
+# with open('log_conf.yml', 'r') as f: 
+#     log_config = yaml.safe_load(f.read()) 
+#     logging.config.dictConfig(log_config)
 
-# logging.config.dictConfig(log_config)
 # logger = logging.getLogger('basicLogger')
-# logger.info("App Conf File: %s" % app_conf_file)
-# logger.info("Log Conf File: %s" % log_conf_file)
 
 
-first_producer = None 
+if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
+    print("In Test Environment")
+    app_conf_file = "/config/app_conf.yml"
+    log_conf_file = "/config/log_conf.yml"
+else:
+    print("In Dev Environment")
+    app_conf_file = "app_conf.yml"
+    log_conf_file = "log_conf.yml"
+
+with open(app_conf_file, 'r') as f:
+    app_config = yaml.safe_load(f.read())
+
+# External Logging Configuration
+with open(log_conf_file, 'r') as f:
+    log_config = yaml.safe_load(f.read())
+
+logging.config.dictConfig(log_config)
+logger = logging.getLogger('basicLogger')
+logger.info("App Conf File: %s" % app_conf_file)
+logger.info("Log Conf File: %s" % log_conf_file)
+
+
+# first_producer = None 
 
 def load():
     """ Connect to Kafka """
-    global first_producer
+    # global first_producer
     
     current_retry = 0
     max_retries = app_config["events"]["max_retries"]
@@ -73,16 +73,17 @@ def load():
             ready_msg_str = json.dumps(ready_msg)
             second_producer.produce(ready_msg_str.encode('utf-8'))
 
-            break 
+            return first_producer 
 
         except:
             logger.error("Connection failed.")
             time.sleep(app_config["events"]["sleep_time"])
             current_retry += 1
+
     
 def book_hotel_room(body):
     """ Receives a hotel room booking event """
-    global first_producer
+    # global first_producer
 
     trace_id = uuid.uuid4()
     body["trace_id"] = str(trace_id)
@@ -114,7 +115,7 @@ def book_hotel_room(body):
 
 def book_hotel_activity(body):
     """ Receives a hotel activity reservation event """
-    global first_producer
+    # global first_producer
 
     trace_id = uuid.uuid4()
     body["trace_id"] = str(trace_id)
@@ -152,6 +153,6 @@ app.add_api("openapi.yaml",
             validate_responses=True) 
 
 if __name__ == "__main__":
-    load()
+    first_producer = load()
     app.run(port=8080)
 
