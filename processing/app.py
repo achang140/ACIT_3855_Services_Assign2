@@ -54,10 +54,16 @@ logger.info("App Conf File: %s" % app_conf_file)
 logger.info("Log Conf File: %s" % log_conf_file)
 
 # Connect to the database (db name: stats.sqlite)
+
+db_file_path = "/data/stats.sqlite"
+
 DB_ENGINE = create_engine("sqlite:///%s" % app_config["datastore"]["filename"])
+
+if not os.path.exists(db_file_path):
+    Base.metadata.create_all(DB_ENGINE)
+
 Base.metadata.bind = DB_ENGINE
 DB_SESSION = sessionmaker(bind=DB_ENGINE)
-
 
 current_retry = 0
 max_retries = app_config["events"]["max_retries"]

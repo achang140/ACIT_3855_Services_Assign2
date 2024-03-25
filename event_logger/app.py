@@ -52,8 +52,14 @@ logger = logging.getLogger('basicLogger')
 logger.info("App Conf File: %s" % app_conf_file)
 logger.info("Log Conf File: %s" % log_conf_file)
 
+
+db_file_path = "/data/stats.sqlite"
+
 # Connect to the database (db name: event_stats.sqlite)
 DB_ENGINE = create_engine("sqlite:///%s" % app_config["datastore"]["filename"])
+
+if not os.path.exists(db_file_path):
+    Base.metadata.create_all(DB_ENGINE)
 
 Base.metadata.bind = DB_ENGINE
 DB_SESSION = sessionmaker(bind=DB_ENGINE)

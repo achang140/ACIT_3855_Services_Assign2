@@ -84,7 +84,7 @@ services:
     volumes:
       - /home/azureuser/config/processing:/config
       - /home/azureuser/logs:/logs
-      # - process-sqlite-db:/app
+      - processing-db:/data
     depends_on: 
       - "storage"
       - "kafka"
@@ -118,11 +118,11 @@ services:
     volumes:
       - /home/azureuser/config/event_log:/config
       - /home/azureuser/logs:/logs
-      # - event-sqlite-db:/app
+      - event-db:/data
     depends_on:
       - "kafka"
 
 volumes:
   my-db:
-  # process-sqlite-db:
-  # event-sqlite-db:
+  processing-db:
+  event-db:
