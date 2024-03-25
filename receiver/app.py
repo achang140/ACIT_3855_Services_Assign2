@@ -43,7 +43,7 @@ logger.info("App Conf File: %s" % app_conf_file)
 logger.info("Log Conf File: %s" % log_conf_file)
 
 
-first_producer = None 
+# first_producer = None 
 
 def load():
     """ Connect to Kafka """
