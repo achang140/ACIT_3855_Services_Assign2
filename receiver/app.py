@@ -21,36 +21,45 @@ logger = logging.getLogger('basicLogger')
 current_retry = 0
 max_retries = app_config["events"]["max_retries"]
 
-while current_retry < max_retries:
-    try:
-        logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
-        client = KafkaClient(hosts=f"{app_config['events']['hostname']}:{app_config['events']['port']}")
-        # topic = client.topics[str.encode(app_config["events"]["topic"])]
-        # producer = topic.get_sync_producer()
+first_producer = None 
 
-        # First Topic events 
-        first_topic = client.topics[str.encode(app_config["events"]["topics"][0])]
-        first_producer = first_topic.get_sync_producer()
+def load():
+    """ Connect to Kafka """
+    global first_producer
+    
+    while current_retry < max_retries:
+        try:
+            logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
+            client = KafkaClient(hosts=f"{app_config['events']['hostname']}:{app_config['events']['port']}")
+            # topic = client.topics[str.encode(app_config["events"]["topic"])]
+            # producer = topic.get_sync_producer()
 
-        # Second Topic event_log 
-        second_topic = client.topics[str.encode(app_config["events"]["topics"][1])]
-        second_producer = second_topic.get_sync_producer()
-        ready_msg = {
-            "message_info": "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API.",
-            "message_code": "0001"
-        }
-        ready_msg_str = json.dumps(ready_msg)
-        second_producer.produce(ready_msg_str.encode('utf-8'))
+            # First Topic events 
+            first_topic = client.topics[str.encode(app_config["events"]["topics"][0])]
+            first_producer = first_topic.get_sync_producer()
 
-        break 
+            # Second Topic event_log 
+            second_topic = client.topics[str.encode(app_config["events"]["topics"][1])]
+            second_producer = second_topic.get_sync_producer()
+            ready_msg = {
+                "message_info": "Receiver service successfully started and connected to Kafka. Ready to receive messages on RESTful API.",
+                "message_code": "0001"
+            }
+            ready_msg_str = json.dumps(ready_msg)
+            second_producer.produce(ready_msg_str.encode('utf-8'))
 
-    except:
-        logger.error("Connection failed.")
-        time.sleep(app_config["events"]["sleep_time"])
-        current_retry += 1
+            break 
 
+        except:
+            logger.error("Connection failed.")
+            time.sleep(app_config["events"]["sleep_time"])
+            current_retry += 1
+
+        return first_producer 
+    
 def book_hotel_room(body):
     """ Receives a hotel room booking event """
+    global first_producer
 
     trace_id = uuid.uuid4()
     body["trace_id"] = str(trace_id)
@@ -82,6 +91,7 @@ def book_hotel_room(body):
 
 def book_hotel_activity(body):
     """ Receives a hotel activity reservation event """
+    global first_producer
 
     trace_id = uuid.uuid4()
     body["trace_id"] = str(trace_id)
@@ -119,5 +129,6 @@ app.add_api("openapi.yaml",
             validate_responses=True) 
 
 if __name__ == "__main__":
-    app.run(port=8080, use_reloader=False)
+    load()
+    app.run(port=8080)
 

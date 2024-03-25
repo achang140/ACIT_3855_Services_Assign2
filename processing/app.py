@@ -39,28 +39,33 @@ DB_ENGINE = create_engine("sqlite:///%s" % app_config["datastore"]["filename"])
 Base.metadata.bind = DB_ENGINE
 DB_SESSION = sessionmaker(bind=DB_ENGINE)
 
+producer = None 
 current_retry = 0
 max_retries = app_config["events"]["max_retries"]
 
-while current_retry < max_retries:
-    try:
-        logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
-        client = KafkaClient(hosts=f"{app_config['events']['hostname']}:{app_config['events']['port']}")
-        topic = client.topics[str.encode(app_config["events"]["topic"])]
-        producer = topic.get_sync_producer()
-        ready_msg = {
-            "message_info": "Processing service successfully started and connected to Kafka.",
-            "message_code": "0003"
-        }
-        ready_msg_str = json.dumps(ready_msg)
-        producer.produce(ready_msg_str.encode('utf-8'))
-        
-        break 
+def load():
+    """ Connect to Kafka """
+    global producer
 
-    except:
-        logger.error("Connection failed.")
-        time.sleep(app_config["events"]["sleep_time"])
-        current_retry += 1
+    while current_retry < max_retries:
+        try:
+            logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
+            client = KafkaClient(hosts=f"{app_config['events']['hostname']}:{app_config['events']['port']}")
+            topic = client.topics[str.encode(app_config["events"]["topic"])]
+            producer = topic.get_sync_producer()
+            ready_msg = {
+                "message_info": "Processing service successfully started and connected to Kafka.",
+                "message_code": "0003"
+            }
+            ready_msg_str = json.dumps(ready_msg)
+            producer.produce(ready_msg_str.encode('utf-8'))
+            
+            break 
+
+        except:
+            logger.error("Connection failed.")
+            time.sleep(app_config["events"]["sleep_time"])
+            current_retry += 1
 
 def get_stats():
     """ Gets Hotel Room and Hotel Activity processsed statistics """
@@ -103,7 +108,8 @@ def get_stats():
 
 def populate_stats():
     """ Periodically update stats """
-    
+    global producer
+
     # Log an INFO message indicating periodic processing has started
     logger.info("Start Periodic Processing")
 
@@ -273,5 +279,6 @@ app.app.config["CORS_HEADERS"] = "Content-Type"
 
 
 if __name__ == "__main__":
+    load()
     init_scheduler()
-    app.run(host="0.0.0.0", port=8100, use_reloader=False)
+    app.run(host="0.0.0.0", port=8100)
