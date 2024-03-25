@@ -19,36 +19,36 @@ from pykafka import KafkaClient
 from pykafka.common import OffsetType
 from threading import Thread
 
-with open('app_conf.yml', 'r') as f: 
-    app_config = yaml.safe_load(f.read())
-
-with open('log_conf.yml', 'r') as f: 
-    log_config = yaml.safe_load(f.read()) 
-    logging.config.dictConfig(log_config)
-
-logger = logging.getLogger('basicLogger')
-
-
-# if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
-#     print("In Test Environment")
-#     app_conf_file = "/config/app_conf.yml"
-#     log_conf_file = "/config/log_conf.yml"
-# else:
-#     print("In Dev Environment")
-#     app_conf_file = "app_conf.yml"
-#     log_conf_file = "log_conf.yml"
-
-# with open(app_conf_file, 'r') as f:
+# with open('app_conf.yml', 'r') as f: 
 #     app_config = yaml.safe_load(f.read())
 
-# # External Logging Configuration
-# with open(log_conf_file, 'r') as f:
-#     log_config = yaml.safe_load(f.read())
+# with open('log_conf.yml', 'r') as f: 
+#     log_config = yaml.safe_load(f.read()) 
+#     logging.config.dictConfig(log_config)
 
-# logging.config.dictConfig(log_config)
 # logger = logging.getLogger('basicLogger')
-# logger.info("App Conf File: %s" % app_conf_file)
-# logger.info("Log Conf File: %s" % log_conf_file)
+
+
+if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
+    print("In Test Environment")
+    app_conf_file = "/config/app_conf.yml"
+    log_conf_file = "/config/log_conf.yml"
+else:
+    print("In Dev Environment")
+    app_conf_file = "app_conf.yml"
+    log_conf_file = "log_conf.yml"
+
+with open(app_conf_file, 'r') as f:
+    app_config = yaml.safe_load(f.read())
+
+# External Logging Configuration
+with open(log_conf_file, 'r') as f:
+    log_config = yaml.safe_load(f.read())
+
+logging.config.dictConfig(log_config)
+logger = logging.getLogger('basicLogger')
+logger.info("App Conf File: %s" % app_conf_file)
+logger.info("Log Conf File: %s" % log_conf_file)
 
 DB_ENGINE = create_engine(
     f'mysql+pymysql://{app_config["datastore"]["user"]}:{app_config["datastore"]["password"]}@{app_config["datastore"]["hostname"]}:{app_config["datastore"]["port"]}/{app_config["datastore"]["db"]}',

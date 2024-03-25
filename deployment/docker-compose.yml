@@ -53,6 +53,10 @@ services:
     image: receiver
     ports:
       - "8080:8080"
+    environment: 
+      - TARGET_ENV=test
+    volume:
+      - /home/azureuser/config/receiver:/config
     depends_on:
       - "kafka"
 
@@ -60,6 +64,10 @@ services:
     image: storage
     ports: 
       - "8090:8090"
+    environment: 
+      - TARGET_ENV=test
+    volume:
+      - /home/azureuser/config/storage:/config
     depends_on:
       - "kafka"
       - "db"
@@ -69,16 +77,23 @@ services:
     ports:
       - "8100:8100"
     network_mode: "host"
+    environment: 
+      - TARGET_ENV=test
+    volume:
+      - /home/azureuser/config/processing:/config
+      # - process-sqlite-db:/app
     depends_on: 
       - "storage"
       - "kafka"
-    volumes:
-      - process-sqlite-db:/app
 
   audit_log:
     image: audit_log
     ports: 
       - "8110:8110"
+    environment: 
+      - TARGET_ENV=test
+    volume:
+      - /home/azureuser/config/audit_log:/config
     depends_on:
       - "kafka"
 
@@ -94,12 +109,15 @@ services:
     image: event_log
     ports: 
       - "8120:8120"
+    environment: 
+      - TARGET_ENV=test
+    volume:
+      - /home/azureuser/config/event_log:/config
+      # - event-sqlite-db:/app
     depends_on:
       - "kafka"
-    volumes:
-      - event-sqlite-db:/app
 
 volumes:
   my-db:
-  process-sqlite-db:
-  event-sqlite-db:
+  # process-sqlite-db:
+  # event-sqlite-db:
