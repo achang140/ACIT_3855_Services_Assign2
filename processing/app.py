@@ -55,7 +55,7 @@ logger.info("Log Conf File: %s" % log_conf_file)
 
 # Connect to the database (db name: stats.sqlite)
 
-db_file_path = "/data/stats.sqlite"
+db_file_path = app_config["datastore"]["filename"]
 
 DB_ENGINE = create_engine("sqlite:///%s" % app_config["datastore"]["filename"])
 
