@@ -282,4 +282,4 @@ app.app.config["CORS_HEADERS"] = "Content-Type"
 if __name__ == "__main__":
     load()
     init_scheduler()
-    app.run(host="0.0.0.0", port=8100, reload=False)
+    app.run(host="0.0.0.0", port=8100, use_reloader=False)
