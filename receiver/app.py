@@ -27,7 +27,7 @@ def load():
     
     current_retry = 0
     max_retries = app_config["events"]["max_retries"]
-    
+
     while current_retry < max_retries:
         try:
             logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
@@ -55,8 +55,6 @@ def load():
             logger.error("Connection failed.")
             time.sleep(app_config["events"]["sleep_time"])
             current_retry += 1
-
-        return first_producer 
     
 def book_hotel_room(body):
     """ Receives a hotel room booking event """
