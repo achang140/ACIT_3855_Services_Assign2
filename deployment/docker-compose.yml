@@ -55,7 +55,7 @@ services:
       - "8080:8080"
     environment: 
       - TARGET_ENV=test
-    volume:
+    volumes:
       - /home/azureuser/config/receiver:/config
     depends_on:
       - "kafka"
@@ -66,7 +66,7 @@ services:
       - "8090:8090"
     environment: 
       - TARGET_ENV=test
-    volume:
+    volumes:
       - /home/azureuser/config/storage:/config
     depends_on:
       - "kafka"
@@ -79,7 +79,7 @@ services:
     network_mode: "host"
     environment: 
       - TARGET_ENV=test
-    volume:
+    volumes:
       - /home/azureuser/config/processing:/config
       # - process-sqlite-db:/app
     depends_on: 
@@ -92,7 +92,7 @@ services:
       - "8110:8110"
     environment: 
       - TARGET_ENV=test
-    volume:
+    volumes:
       - /home/azureuser/config/audit_log:/config
     depends_on:
       - "kafka"
@@ -111,7 +111,7 @@ services:
       - "8120:8120"
     environment: 
       - TARGET_ENV=test
-    volume:
+    volumes:
       - /home/azureuser/config/event_log:/config
       # - event-sqlite-db:/app
     depends_on:
