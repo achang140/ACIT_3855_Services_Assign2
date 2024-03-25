@@ -18,14 +18,15 @@ with open('log_conf.yml', 'r') as f:
 
 logger = logging.getLogger('basicLogger')
 
-current_retry = 0
-max_retries = app_config["events"]["max_retries"]
 
 first_producer = None 
 
 def load():
     """ Connect to Kafka """
     global first_producer
+    
+    current_retry = 0
+    max_retries = app_config["events"]["max_retries"]
     
     while current_retry < max_retries:
         try:

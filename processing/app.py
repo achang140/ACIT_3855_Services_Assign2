@@ -40,13 +40,14 @@ Base.metadata.bind = DB_ENGINE
 DB_SESSION = sessionmaker(bind=DB_ENGINE)
 
 producer = None 
-current_retry = 0
-max_retries = app_config["events"]["max_retries"]
 
 def load():
     """ Connect to Kafka """
     global producer
 
+    current_retry = 0
+    max_retries = app_config["events"]["max_retries"]
+    
     while current_retry < max_retries:
         try:
             logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
