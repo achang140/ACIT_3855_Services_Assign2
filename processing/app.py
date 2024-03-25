@@ -47,7 +47,7 @@ def load():
 
     current_retry = 0
     max_retries = app_config["events"]["max_retries"]
-    
+
     while current_retry < max_retries:
         try:
             logger.info(f"Trying to connect to Kafka. Current retry count: {current_retry}")
@@ -282,4 +282,4 @@ app.app.config["CORS_HEADERS"] = "Content-Type"
 if __name__ == "__main__":
     load()
     init_scheduler()
-    app.run(host="0.0.0.0", port=8100)
+    app.run(host="0.0.0.0", port=8100, reload=False)
