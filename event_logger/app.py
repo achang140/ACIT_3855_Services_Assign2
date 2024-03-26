@@ -67,7 +67,13 @@ DB_SESSION = sessionmaker(bind=DB_ENGINE)
 
 
 def process_messages():
-    """ Process service event messages """
+    """ 
+    Process service event messages 
+    
+    - Connect to Kafka 
+    - Set up a consumer  
+    - Consume event log messages (receiver, storage, and processing services) from the event_log topic and save them to 1) log file 2) SQLite database 
+    """
 
     hostname = "%s:%d" % (app_config["events"]["hostname"], app_config["events"]["port"])
 
@@ -126,7 +132,7 @@ def process_messages():
 
 
 def get_event_stats():
-    """ Gets Hotel Room and Hotel Activity processsed statistics """
+    """ Receive event statistics from the EventStats table within the event_stats.sqlite database """
 
     # Log an INFO message indicating request has started
     logger.info("Request Started")

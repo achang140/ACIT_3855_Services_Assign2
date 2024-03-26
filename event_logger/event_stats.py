@@ -3,7 +3,7 @@ from base import Base
 import datetime
 
 class EventStats(Base):
-    """ Processing Statistics """
+    """ Initializes an EventStats object with the provided message information, message code, and last updated timestamp."""
     
     __tablename__ = "event_stats"
 
@@ -13,7 +13,7 @@ class EventStats(Base):
     last_updated = Column(DateTime, nullable=False)
 
     def __init__(self, message_info, message_code, last_updated):
-        """ Initializes a processing statistics object """
+        """ Initializes the EventStats object """
 
         self.message_info = message_info
         self.message_code = message_code
